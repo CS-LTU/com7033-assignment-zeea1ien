@@ -2,8 +2,10 @@ from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 import os
 import sqlite3
+import pymongo
 
 app = Flask(__name__)
+mongodb = pymongo.MongoClient("mongodb://localhost:27017")
 
 # Configure SQLite database
 basedir = os.path.abspath(os.path.dirname(__file__))
