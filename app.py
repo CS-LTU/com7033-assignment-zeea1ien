@@ -1,84 +1,68 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
+from flask_login import LoginManager, current_user, login_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
+from SQLite_handler import *
 import os
 import sqlite3
 import pymongo
+import random as R
+import ast
+from user import User
 
+create_connection()
 app = Flask(__name__)
-mongodb = pymongo.MongoClient("mongodb://localhost:27017")
+app.secret_key = "ASecretButNotSoSecretKey"# secret key for secuirty- to protect user session data 
+#mongodb = pymongo.MongoClient("mongodb://localhost:27017")
 
-# Configure SQLite database
-basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.db')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# Initialise the database
-db = SQLAlchemy(app)
-
-# Table 1: User - for user registration
-class User(db.Model):
-    __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(128), nullable=False)  # Password should ideally be hashed
-
-    def __repr__(self):
-        return f"<User {self.username}>"
-
-# Table 2: Patient - for patient medical data
-class Patient(db.Model):
-    __tablename__ = 'patients'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    age = db.Column(db.Integer, nullable=False)
-    gender = db.Column(db.String(10), nullable=False)
-    hypertension = db.Column(db.Boolean, default=False)
-
-    def __repr__(self):
-        return f"<Patient {self.name}>"
+login_manager = LoginManager()
+login_manager.init_app(app)
+@login_manager.user_loader
+def load_fuser(id):
+    user_info = user_check_confirmation()
+    if len(user_info) <= 0:
+        return None
+    else:
+        return User(user_info[0], user_info[1])
+    
 
 # Route for the homepage
 @app.route('/')
 def home():
     return render_template('home.html')
 
+#Signup
+@app.route("/signup")
+def signup():
+    if current_user.is_authenticated is False:
+        return render_template("register.html")
+    else:
+        return redirect("/")
+
 # Route to add a new user
 @app.route('/add_user', methods=['POST'])
 def add_user():
-    username = request.form['username']
-    email = request.form['email']
-    password = request.form['password']  # Password should be hashed for security
-
-    new_user = User(username=username, email=email, password=password)
-    db.session.add(new_user)
-    db.session.commit()
-
-    return 'User added successfully!'
+    if current_user.is_authenticated is False:
+        user_dict = {}
+        user_data = request.get_data()
+        user_data = user_data.decode()
+        user_data = user_data.split("&")
+        user_dict["username"] = user_data[0].replace("username=", "")
+        user_dict["password"] = user_data[1].replace("password=", "")
+        create_user(user_dict)
+        return redirect('/')
+    else:
+        return redirect("/")
 
 # Route to add a new patient
 @app.route('/add_patient', methods=['POST'])
 def add_patient():
-    name = request.form['name']
-    age = request.form['age']
-    gender = request.form['gender']
-    hypertension = bool(request.form.get('hypertension', False))
-
-    new_patient = Patient(name=name, age=age, gender=gender, hypertension=hypertension)
-    db.session.add(new_patient)
-    db.session.commit()
-
     return 'Patient added successfully!'
 
 @app.route('/view_patients')
 def view_patients():
-    # Retrieve patients from SQLite and MongoDB
-    sqlite_patients = Patient.query.all()
-    mongo_patients = list(patient_collection.find())
-    
+    # Retrieve patients from MongoDB
+    mongo_patients = list(patient_collection.find())    
     return render_template('patients.html', sqlite_patients=sqlite_patients, mongo_patients=mongo_patients)
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()  # Create tables if they don't exist
-    app.run(debug=True)
+    app.run(host="0.0.0.0", debug=True)
