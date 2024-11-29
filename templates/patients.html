@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Stroke Prediction App</title>
+    <title>All Patients</title>
 </head>
 <body>
     <h1>Welcome to the Stroke Prediction App</h1>
@@ -16,7 +16,7 @@
         {% endif %}
     {% endwith %}
 
-    <!-- Add User Form -->
+    <!-- Form to add a new user -->
     <h2>Add User</h2>
     <form action="/add_user" method="post">
         <label>Username:</label><input type="text" name="username" required><br>
@@ -25,7 +25,7 @@
         <button type="submit">Add User</button>
     </form>
 
-    <!-- Add Patient Form -->
+    <!-- Form to add a new patient -->
     <h2>Add Patient</h2>
     <form action="/add_patient" method="post">
         <label>Name:</label><input type="text" name="name" required><br>
@@ -40,6 +40,22 @@
         <button type="submit">Add Patient</button>
     </form>
 
-    <a href="{{ url_for('view_patients') }}">View All Patients</a>
+    <!-- Section to display patients from SQLite -->
+    <h2>Patients from SQLite</h2>
+    <ul>
+        {% for patient in sqlite_patients %}
+            <li>{{ patient.name }}, Age: {{ patient.age }}, Gender: {{ patient.gender }}, Hypertension: {{ patient.hypertension }}</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Section to display patients from MongoDB -->
+    <h2>Patients from MongoDB</h2>
+    <ul>
+        {% for patient in mongo_patients %}
+            <li>{{ patient['name'] }}, Age: {{ patient['age'] }}, Gender: {{ patient['gender'] }}, Hypertension: {{ patient['hypertension'] }}</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{{ url_for('home') }}">Go Back to Home</a>
 </body>
 </html>

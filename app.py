@@ -70,6 +70,15 @@ def add_patient():
 
     return 'Patient added successfully!'
 
+@app.route('/view_patients')
+def view_patients():
+    # Retrieve patients from SQLite and MongoDB
+    sqlite_patients = Patient.query.all()
+    mongo_patients = list(patient_collection.find())
+    
+    return render_template('patients.html', sqlite_patients=sqlite_patients, mongo_patients=mongo_patients)
+
 if __name__ == '__main__':
-    db.create_all()  # Create tables if they don't exist
+    with app.app_context():
+        db.create_all()  # Create tables if they don't exist
     app.run(debug=True)
