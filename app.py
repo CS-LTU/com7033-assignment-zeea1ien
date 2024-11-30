@@ -18,11 +18,11 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 @login_manager.user_loader
 def load_fuser(id):
-    user_info = user_check_confirmation()
+    user_info = user_check_confirmation(id)
     if len(user_info) <= 0:
         return None
     else:
-        return User(user_info[0], user_info[1])
+        return User(user_info["id"], user_info["username"])
     
 
 # Route for the homepage
@@ -37,7 +37,37 @@ def signup():
         return render_template("register.html")
     else:
         return redirect("/")
-
+    
+@app.route("/login")
+def login():
+    if current_user.is_authenticated is False:
+        return render_template("login.html")
+    else:
+        return redirect("/")
+    
+@app.route('/logout')
+def logout():
+    if current_user.is_authenticated is True:
+        logout_user()
+    return redirect('/')
+    
+@app.route("/loggingIn", methods=["POST"])
+def loggingIn():
+    if current_user.is_authenticated is False:
+        user_dict = {}
+        user_data = request.get_data()
+        user_data = user_data.decode()
+        user_data = user_data.split("&")
+        user_dict["username"] = user_data[0].replace("username=", "")
+        user_dict["password"] = user_data[1].replace("password=", "")
+        if user_exists(user_dict["username"]) is True:
+            login_user(User(user_getID(user_dict["username"]), user_dict["username"],))
+            return redirect('/')
+        else:
+            return "User does not exist"
+    else:
+        return redirect("/")
+    
 # Route to add a new user
 @app.route('/add_user', methods=['POST'])
 def add_user():

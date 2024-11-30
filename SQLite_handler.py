@@ -22,6 +22,7 @@ def create_user(user_data):
     cursor = connection.cursor()
     if user_exists(user_data["username"]) is False:
         try:
+            cursor.execute("SELECT user_id FROM table_users")
             fetch = cursor.fetchall()
             if len(fetch) >= 1:
                 new_id = int(fetch[-1][0]) + 1
@@ -50,6 +51,19 @@ def user_exists(username):
         cursor.close()
         connection.close()
         return False #The user does not exist
+    
+def user_getID(username):
+    connection = sqlite3.connect("users.db")
+    cursor = connection.cursor()
+    cursor.execute("SELECT user_id FROM table_users WHERE user_name = ?", (username,))
+    fetch = cursor.fetchall()
+    if len(fetch) >= 1:
+        user_id = fetch[0][0]
+    else:
+        user_id = None
+    cursor.close()
+    connection.close()
+    return user_id
     
 def user_check_confirmation(user_id):
     user_info = {}
