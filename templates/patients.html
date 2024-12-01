@@ -5,57 +5,44 @@
     <title>All Patients</title>
 </head>
 <body>
-    <h1>Welcome to the Stroke Prediction App</h1>
-
-    <!-- Display flash messages -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-
-    <!-- Form to add a new user -->
-    <h2>Add User</h2>
-    <form action="/add_user" method="post">
-        <label>Username:</label><input type="text" name="username" required><br>
-        <label>Email:</label><input type="email" name="email" required><br>
-        <label>Password:</label><input type="password" name="password" required><br>
-        <button type="submit">Add User</button>
-    </form>
-
     <!-- Form to add a new patient -->
-    <h2>Add Patient</h2>
-    <form action="/add_patient" method="post">
-        <label>Name:</label><input type="text" name="name" required><br>
-        <label>Age:</label><input type="number" name="age" required><br>
-        <label>Gender:</label>
-        <select name="gender" required>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Other">Other</option>
-        </select><br>
-        <label>Hypertension:</label><input type="checkbox" name="hypertension"><br>
-        <button type="submit">Add Patient</button>
-    </form>
-
-    <!-- Section to display patients from SQLite -->
-    <h2>Patients from SQLite</h2>
-    <ul>
-        {% for patient in sqlite_patients %}
-            <li>{{ patient.name }}, Age: {{ patient.age }}, Gender: {{ patient.gender }}, Hypertension: {{ patient.hypertension }}</li>
-        {% endfor %}
-    </ul>
-
-    <!-- Section to display patients from MongoDB -->
-    <h2>Patients from MongoDB</h2>
-    <ul>
+    <h2>Patient Data</h2>
+    {% if mongo_patients is not none and mongo_patients|length > 0 %}
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Gender</th>
+                <th>Age</th>
+                <th>Hypertension</th>
+                <th>Heart Disease</th>
+                <th>Married</th>
+                <th>Work Type</th>
+                <th>Residence Type</th>
+                <th>Glucose</th>
+                <th>BMI</th>
+                <th>Smoked</th>
+                <th>Stroke</th>
+            </tr>
         {% for patient in mongo_patients %}
-            <li>{{ patient['name'] }}, Age: {{ patient['age'] }}, Gender: {{ patient['gender'] }}, Hypertension: {{ patient['hypertension'] }}</li>
+            <tr>
+                <td>{{ patient.name }}</td>
+                <td>{{ patient.gender }}</td>
+                <td>{{ patient.age }}</td>
+                <td>{{ patient.hypertension }}</td>
+                <td>{{ patient.heart_disease }}</td>
+                <td>{{ patient.ever_married }}</td>
+                <td>{{ patient.work_type }}</td>
+                <td>{{ patient.residence_type }}</td>
+                <td>{{ patient.avg_glucose_level }}</td>
+                <td>{{ patient.bmi }}</td>
+                <td>{{ patient.smoking_status }}</td>
+                <td>{{ patient.stroke }}</td>
+            </tr>
         {% endfor %}
-    </ul>
-
+        </table>
+    {% else %}
+        <p>No data in database</p>
+    {% endif %}
     <a href="{{ url_for('home') }}">Go Back to Home</a>
 </body>
 </html>

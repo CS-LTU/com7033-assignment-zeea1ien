@@ -76,3 +76,11 @@ def user_check_confirmation(user_id):
     cursor.close()
     connection.close()
     return user_info
+
+def user_delete(username):
+    connection = sqlite3.connect("users.db")
+    cursor = connection.cursor()
+    cursor.execute("DELETE FROM table_users WHERE user_name = ?", (username,))
+    connection.commit()
+    cursor.close()
+    connection.close()

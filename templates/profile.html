@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Data</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>View Data </h2>
+        {% if user_data is not none and user_data|length > 0 %}
+            {% for patient in user_data %}
+                <p>Username: {{ patient.name }}</p>
+                <p>Gender: {{ patient.gender }}</p>
+                <p>Age: {{ patient.age }}</p>
+                <p>Hypertension: {{ patient.hypertension }}</p>
+                <p>Heart Disease: {{ patient.heart_disease }}</p>
+                <p>Married: {{ patient.ever_married }}</p>
+                <p>Work Type: {{ patient.work_type }}</p>
+                <p>Residence Type: {{ patient.residence_type }}</p>
+                <p>Glucose Level: {{ patient.avg_glucose_level }}</p>
+                <p>BMI: {{ patient.bmi }}</p>
+                <p>Smoker: {{ patient.smoking_status }}</p>
+                <p>Stroke: {{ patient.stroke }}</p>
+            {% endfor %}
+            <a href="{{ url_for('delete_data') }}">Delete Patient Data</a><br>
+        {% else %}
+            <p>You have not submitted any data</p>
+        {% endif %}
+        <a href="{{ url_for('delete_user') }}">Delete Account</a>
+    </div>
+</body>
+</html>

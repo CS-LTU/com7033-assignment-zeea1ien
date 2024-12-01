@@ -30,8 +30,10 @@ def load_fuser(id):
 # Route for the homepage
 @app.route('/')
 def home():
-    return render_template('home.html')
-
+    if current_user.is_authenticated is True:
+        return render_template('home.html', user_data=find_data(mongo_connection, {"name": current_user.username}))
+    else:
+        return render_template('home.html', user_data=find_data(mongo_connection, {"name": None}))
 #Signup
 @app.route("/signup")
 def signup():
@@ -112,18 +114,37 @@ def add_patient():
         else:
             patient_dict["stroke"] = True
         if "smoking_status" in patient_dict:
-            patient_dict["stroke"] = True
+            patient_dict["smoking_status"] = True
         else:
-            patient_dict["stroke"] = False
+            patient_dict["smoking_status"] = False
         print(patient_dict, flush=True)
         insert_data(patient_dict, mongo_connection)
-    return 'Patient added successfully!'
+    return redirect('/')
 
 @app.route('/view_patients')
 def view_patients():
     # Retrieve patients from MongoDB
-    mongo_patients = list(patient_collection.find())    
-    return render_template('patients.html', sqlite_patients=sqlite_patients, mongo_patients=mongo_patients)
+    return render_template('patients.html', mongo_patients=find_data(mongo_connection))
+
+@app.route('/your_data')
+def user_data():
+    if current_user.is_authenticated is True:
+        return render_template('profile.html', user_data=find_data(mongo_connection, {"name": current_user.username}))
+    else:
+        return redirect('/')
+
+@app.route('/delete_data')
+def delete_data():
+    delete_patient({"name": current_user.username}, mongo_connection)
+    return redirect('/')
+
+@app.route('/delete_user')
+def delete_user():
+    if current_user.is_authenticated is True:
+        username = current_user.username
+        logout_user()
+        user_delete(username)
+    return redirect('/')
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", debug=True)
