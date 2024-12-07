@@ -131,6 +131,7 @@ def user_data():
     if current_user.is_authenticated is True:
         return render_template('profile.html', user_data=find_data(mongo_connection, {"name": current_user.username}))
     else:
+         
         return redirect('/')
 
 @app.route('/delete_data')

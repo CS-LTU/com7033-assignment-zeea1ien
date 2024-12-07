@@ -2,61 +2,152 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Stroke Prediction App</title>
+    <!-- Bootstrap CSS -->
+    <link
+     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" 
+     rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
+  <!-- Navbar Added -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          {% if current_user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('user_data') }}">View Your Data</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('view_patients') }}">View All Patients</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link btn btn-danger text-white ms-3" href="{{ url_for('logout') }}">Logout</a>
+            </li>
+            
+          {% else %}
+    
+          {% endif %}
+          
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Header Section -->
+  <div class="container-fluid p-5 bg-primary text-white text-center">
     <h1>Welcome to the Stroke Prediction App</h1>
+  </div>
+
+  <!-- Main Content Section: Form Creation -->
+  <div class="container mt-5">
     {% if current_user.is_authenticated %}
-        {% if user_data is none or user_data|length <= 0 %}
-            <!-- Add Patient Form -->
-            <h2>Add Patient</h2>
-            <form action="/add_patient" method="post">
-                <label>Age:</label><input type="number" name="age" required><br>
+      {% if user_data is none or user_data|length <= 0 %}
+        <!-- Add Patient Form -->
+        <h2 class="text-center mb-4">Add Patient</h2>
+        <form action="/add_patient" method="post" class="p-4 border rounded bg-light">
+          <!-- Age -->
+          <div class="mb-3">
+            <label for="age" class="form-label">Age:</label>
+            <input type="number" name="age" id="age" class="form-control" required>
+          </div>
 
-                <label>Gender:</label>
-                <select name="gender" required>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                </select><br>
+          <!-- Gender -->
+          <div class="mb-3">
+            <label for="gender" class="form-label">Gender:</label>
+            <select name="gender" id="gender" class="form-select" required>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
 
-                <label>Relationship:</label>
-                <select name="ever_married" required>
-                    <option value="Single" selected>Single</option>
-                    <option value="Married">Married</option>
-                    <option value="Co-habiting">Co-Habiting</option>
-                </select><br>
-                <label>Residence Type:</label>
-                <select name="residence_type" required>
-                    <option value="Urban" selected>Urban</option>
-                    <option value="Non-Urban">Non Urban</option>
-                </select><br>
-                <label>Employment Status:</label>
-                <select name="work_type" required>
-                    <option value="Employed" selected>Employed</option>
-                    <option value="Self-Employed">Self-Employed</option>
-                    <option value="Unemployed">Unemployed</option>
-                </select><br>
+          <!-- Relationship -->
+          <div class="mb-3">
+            <label for="ever_married" class="form-label">Relationship:</label>
+            <select name="ever_married" id="ever_married" class="form-select" required>
+              <option value="Single" selected>Single</option>
+              <option value="Married">Married</option>
+              <option value="Co-habiting">Co-Habiting</option>
+            </select>
+          </div>
 
-                <label>Hypertension:</label><input type="checkbox" name="hypertension"><br>
-                <label>Heart Disease:</label><input type="checkbox" name="heart_disease"><br>
-                <label>History of Stroke:</label><input type="checkbox" name="stroke"><br>
-                <label>Smoker:</label><input type="checkbox" name="smoking_status"><br>
-                <label>BMI:</label><input type="number" name="bmi" required><br>
-                <label>Glucose Level:</label><input type="number" name="avg_glucose_level" required><br>
-                <button type="submit">Add Patient</button>
-            </form>
-        {% else %}
-            <p>You have already submitted data!</p>
-        {% endif %}
-        <a href="{{ url_for('user_data') }}">View Your Data</a><br>
-        <a href="{{ url_for('view_patients') }}">View All Patients</a>
-        <h3><a href="{{ url_for('logout') }}">Logout</a></h3>
+          <!-- Residence Type -->
+          <div class="mb-3">
+            <label for="residence_type" class="form-label">Residence Type:</label>
+            <select name="residence_type" id="residence_type" class="form-select" required>
+              <option value="Urban" selected>Urban</option>
+              <option value="Non-Urban">Non Urban</option>
+            </select>
+          </div>
+
+          <!-- Employment Status -->
+          <div class="mb-3">
+            <label for="work_type" class="form-label">Employment Status:</label>
+            <select name="work_type" id="work_type" class="form-select" required>
+              <option value="Employed" selected>Employed</option>
+              <option value="Self-Employed">Self-Employed</option>
+              <option value="Unemployed">Unemployed</option>
+            </select>
+          </div>
+
+          <!-- Hypertension -->
+          <div class="form-check mb-3">
+            <input type="checkbox" name="hypertension" id="hypertension" class="form-check-input">
+            <label for="hypertension" class="form-check-label">Hypertension</label>
+          </div>
+
+          <!-- Heart Disease -->
+          <div class="form-check mb-3">
+            <input type="checkbox" name="heart_disease" id="heart_disease" class="form-check-input">
+            <label for="heart_disease" class="form-check-label">Heart Disease</label>
+          </div>
+
+          <!-- History of Stroke -->
+          <div class="form-check mb-3">
+            <input type="checkbox" name="stroke" id="stroke" class="form-check-input">
+            <label for="stroke" class="form-check-label">History of Stroke</label>
+          </div>
+
+          <!-- Smoker -->
+          <div class="form-check mb-3">
+            <input type="checkbox" name="smoking_status" id="smoking_status" class="form-check-input">
+            <label for="smoking_status" class="form-check-label">Smoker</label>
+          </div>
+
+          <!-- BMI -->
+          <div class="mb-3">
+            <label for="bmi" class="form-label">BMI:</label>
+            <input type="number" name="bmi" id="bmi" class="form-control" required>
+          </div>
+
+          <!-- Glucose Level -->
+          <div class="mb-3">
+            <label for="avg_glucose_level" class="form-label">Glucose Level:</label>
+            <input type="number" name="avg_glucose_level" id="avg_glucose_level" class="form-control" required>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="text-center">
+            <button type="submit" class="btn btn-primary">Add Patient</button>
+          </div>
+        </form>
+      {% else %}
+        <p>You have already submitted data!</p>
+      {% endif %}
     {% else %}
+      <div class="text-center mt-5">
         <h2>Not Logged In!</h2>
-        <h3><a href="{{ url_for('login') }}">Login</a></h3>
-        <h3><a href="{{ url_for('signup') }}">Signup</a></h3>
+        <a href="{{ url_for('login') }}" class="btn btn-primary me-2">Login</a>
+        <a href="{{ url_for('signup') }}" class="btn btn-outline-primary">Signup</a>
+      </div>
     {% endif %}
+  </div>
 </body>
 </html>
 
