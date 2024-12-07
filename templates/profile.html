@@ -6,6 +6,7 @@
     <title>Your Data</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
     <div class="container">
         <h2>View Data </h2>
@@ -24,11 +25,25 @@
                 <p>Smoker: {{ patient.smoking_status }}</p>
                 <p>Stroke: {{ patient.stroke }}</p>
             {% endfor %}
-            <a href="{{ url_for('delete_data') }}">Delete Patient Data</a><br>
-        {% else %}
-            <p>You have not submitted any data</p>
-        {% endif %}
-        <a href="{{ url_for('delete_user') }}">Delete Account</a>
-    </div>
+        <div class="mt-4">
+    <!-- Delete Patient Data Button -->
+             <a href="{{ url_for('delete_data') }}" class="btn btn-danger">Delete Patient Data</a>
+        </div>
+            {% else %}
+        <div class="alert alert-warning text-center" role="alert">
+        You have not submitted any data.
+        </div>
+            {% endif %}
+
+        <div class="mt-4">
+    <!-- Delete Account Button -->
+        <a href="{{ url_for('delete_user') }}" class="btn btn-danger">Delete Account</a>
+        </div>
+
+        <div class="text-center mt-4">
+    <!-- Go Back to Home Button -->
+         <a href="{{ url_for('home') }}" class="btn btn-primary">Go Back to Home</a>
+        </div>
+
 </body>
 </html>
