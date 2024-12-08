@@ -9,6 +9,9 @@ import pymongo
 import random as R
 import ast
 from user import User
+from bcrypt import checkpw
+
+users = {} #global dict to store users data
 
 create_connection()
 mongo_connection = connect_to_mongodb()
@@ -54,7 +57,7 @@ def logout():
     if current_user.is_authenticated is True:
         logout_user()
     return redirect('/')
-    
+
 @app.route("/loggingIn", methods=["POST"])
 def loggingIn():
     if current_user.is_authenticated is False:
@@ -64,6 +67,7 @@ def loggingIn():
         user_data = user_data.split("&")
         user_dict["username"] = user_data[0].replace("username=", "")
         user_dict["password"] = user_data[1].replace("password=", "")
+      
         if user_exists(user_dict["username"]) is True:
             login_user(User(user_getID(user_dict["username"]), user_dict["username"],))
             return redirect('/')
